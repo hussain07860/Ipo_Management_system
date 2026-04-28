@@ -49,7 +49,21 @@ Update `.env` file with your MySQL password:
 MYSQL_PASSWORD=your_mysql_password_here
 ```
 
-### 3. Initialize Database
+### 3. Setup MySQL User (Important!)
+Open MySQL and run:
+```sql
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON ipo_management_system.* TO 'admin'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+Or use root user by updating `.env`:
+```
+MYSQL_USER=root
+MYSQL_PASSWORD=your_root_password
+```
+
+### 4. Initialize Database
 ```bash
 python init_db.py
 ```
@@ -60,7 +74,7 @@ This will:
 - Insert sample data
 - Create test accounts
 
-### 4. Run Application
+### 5. Run Application
 ```bash
 python app.py
 ```
@@ -176,6 +190,36 @@ For production:
 4. Enable HTTPS
 5. Use environment variables for sensitive data
 6. Set up proper MySQL user with limited permissions
+
+## Troubleshooting
+
+### MySQL Access Denied Error
+If you get "Access denied for user 'admin'@'localhost'":
+
+**Option 1: Create MySQL User**
+```sql
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON ipo_management_system.* TO 'admin'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+**Option 2: Use Root User**
+Update `.env`:
+```
+MYSQL_USER=root
+MYSQL_PASSWORD=your_root_password
+```
+
+### Port Already in Use
+If port 5000 is busy, change in `app.py`:
+```python
+app.run(debug=True, port=5001)
+```
+
+### Module Not Found
+```bash
+pip install -r requirements.txt
+```
 
 ## License
 
