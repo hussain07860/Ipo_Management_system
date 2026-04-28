@@ -14,17 +14,11 @@
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <div class="sidebar-logo-title">IPO Genesis</div>
-                <div class="sidebar-logo-subtitle">Investor Portal</div>
+                <div class="sidebar-logo-subtitle">INVESTOR PORTAL</div>
             </div>
             <ul class="sidebar-nav">
                 <li class="sidebar-nav-item">
                     <a href="{{ url_for('user_home') }}" class="sidebar-nav-link">
-                        <i class="fas fa-home"></i>
-                        <span>Home</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <a href="{{ url_for('user_dashboard') }}" class="sidebar-nav-link">
                         <i class="fas fa-chart-line"></i>
                         <span>Dashboard</span>
                     </a>
@@ -36,15 +30,15 @@
                     </a>
                 </li>
                 <li class="sidebar-nav-item">
-                    <a href="{{ url_for('wallet') }}" class="sidebar-nav-link active">
-                        <i class="fas fa-wallet"></i>
-                        <span>Wallet</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
                     <a href="{{ url_for('portfolio') }}" class="sidebar-nav-link">
                         <i class="fas fa-briefcase"></i>
                         <span>Portfolio</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('wallet') }}" class="sidebar-nav-link active">
+                        <i class="fas fa-wallet"></i>
+                        <span>Wallet</span>
                     </a>
                 </li>
                 <li class="sidebar-nav-item">

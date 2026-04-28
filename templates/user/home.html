@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <div class="dashboard-wrapper">
@@ -20,13 +21,13 @@
             <ul class="sidebar-nav">
                 <li class="sidebar-nav-item">
                     <a href="{{ url_for('user_home') }}" class="sidebar-nav-link active">
-                        <i class="fas fa-th-large"></i>
+                        <i class="fas fa-chart-line"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="sidebar-nav-item">
                     <a href="{{ url_for('user_ipos') }}" class="sidebar-nav-link">
-                        <i class="fas fa-chart-line"></i>
+                        <i class="fas fa-building"></i>
                         <span>IPO Explorer</span>
                     </a>
                 </li>
@@ -46,6 +47,12 @@
                     <a href="{{ url_for('my_applications') }}" class="sidebar-nav-link">
                         <i class="fas fa-file-alt"></i>
                         <span>Applications</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('logout') }}" class="sidebar-nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
                     </a>
                 </li>
             </ul>
@@ -135,6 +142,25 @@
 
                 <!-- Quick Actions -->
                 <div style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1rem; font-size: 1.25rem;">Portfolio Performance</h3>
+                    
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                        <!-- Portfolio Growth Chart -->
+                        <div class="stat-card" style="padding: 1.5rem;">
+                            <h4 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-secondary);">Portfolio Growth (Last 6 Months)</h4>
+                            <canvas id="portfolioChart" style="max-height: 250px;"></canvas>
+                        </div>
+
+                        <!-- Asset Allocation Pie Chart -->
+                        <div class="stat-card" style="padding: 1.5rem;">
+                            <h4 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-secondary);">Asset Allocation</h4>
+                            <canvas id="allocationChart" style="max-height: 250px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div style="margin-top: 2rem;">
                     <h3 style="margin-bottom: 1rem; font-size: 1.25rem;">Quick Actions</h3>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
                         <a href="{{ url_for('user_ipos') }}" class="stat-card" style="text-decoration: none; cursor: pointer;">
@@ -194,5 +220,127 @@
     {% endwith %}
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Portfolio Growth Chart
+        const ctx1 = document.getElementById('portfolioChart').getContext('2d');
+        const portfolioChart = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'],
+                datasets: [{
+                    label: 'Portfolio Value',
+                    data: [85000, 92000, 88000, 95000, 102000, 108000, {{ (user[4]|float) * 1.15 }}],
+                    borderColor: '#4c6fff',
+                    backgroundColor: 'rgba(76, 111, 255, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#4c6fff',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#1a2142',
+                        titleColor: '#fff',
+                        bodyColor: '#8b92b8',
+                        borderColor: '#2a3254',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return '₹' + context.parsed.y.toLocaleString('en-IN');
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        grid: {
+                            color: '#2a3254',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#8b92b8',
+                            callback: function(value) {
+                                return '₹' + (value/1000) + 'K';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#8b92b8'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Asset Allocation Chart
+        const ctx2 = document.getElementById('allocationChart').getContext('2d');
+        const allocationChart = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['Reliance', 'Tata Motors', 'Infosys', 'HDFC Bank', 'Others'],
+                datasets: [{
+                    data: [30, 25, 20, 15, 10],
+                    backgroundColor: [
+                        '#4c6fff',
+                        '#00d4aa',
+                        '#ffa502',
+                        '#ff4757',
+                        '#8b92b8'
+                    ],
+                    borderColor: '#1a2142',
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#8b92b8',
+                            padding: 15,
+                            font: {
+                                size: 11
+                            },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1a2142',
+                        titleColor: '#fff',
+                        bodyColor: '#8b92b8',
+                        borderColor: '#2a3254',
+                        borderWidth: 1,
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed + '%';
+                            }
+                        }
+                    }
+                },
+                cutout: '65%'
+            }
+        });
+    </script>
 </body>
 </html>

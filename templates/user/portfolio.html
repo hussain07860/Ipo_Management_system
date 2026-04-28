@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <div class="dashboard-wrapper">
@@ -14,17 +15,11 @@
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <div class="sidebar-logo-title">IPO Genesis</div>
-                <div class="sidebar-logo-subtitle">Investor Portal</div>
+                <div class="sidebar-logo-subtitle">INVESTOR PORTAL</div>
             </div>
             <ul class="sidebar-nav">
                 <li class="sidebar-nav-item">
                     <a href="{{ url_for('user_home') }}" class="sidebar-nav-link">
-                        <i class="fas fa-home"></i>
-                        <span>Home</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
-                    <a href="{{ url_for('user_dashboard') }}" class="sidebar-nav-link">
                         <i class="fas fa-chart-line"></i>
                         <span>Dashboard</span>
                     </a>
@@ -36,15 +31,15 @@
                     </a>
                 </li>
                 <li class="sidebar-nav-item">
-                    <a href="{{ url_for('wallet') }}" class="sidebar-nav-link">
-                        <i class="fas fa-wallet"></i>
-                        <span>Wallet</span>
-                    </a>
-                </li>
-                <li class="sidebar-nav-item">
                     <a href="{{ url_for('portfolio') }}" class="sidebar-nav-link active">
                         <i class="fas fa-briefcase"></i>
                         <span>Portfolio</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('wallet') }}" class="sidebar-nav-link">
+                        <i class="fas fa-wallet"></i>
+                        <span>Wallet</span>
                     </a>
                 </li>
                 <li class="sidebar-nav-item">
@@ -84,6 +79,23 @@
                     <h1 class="page-title">Investment Portfolio</h1>
                     <p class="page-subtitle">Track your holdings and performance</p>
                 </div>
+
+                <!-- Performance Overview -->
+                {% if holdings %}
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                    <!-- P&L Chart -->
+                    <div class="stat-card" style="padding: 1.5rem;">
+                        <h4 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-secondary);">Profit & Loss Trend</h4>
+                        <canvas id="plChart" style="max-height: 200px;"></canvas>
+                    </div>
+
+                    <!-- Holdings Distribution -->
+                    <div class="stat-card" style="padding: 1.5rem;">
+                        <h4 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-secondary);">Holdings Distribution</h4>
+                        <canvas id="holdingsChart" style="max-height: 200px;"></canvas>
+                    </div>
+                </div>
+                {% endif %}
 
                 <!-- Portfolio Table -->
                 <div class="table-card">
@@ -155,5 +167,125 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% if holdings %}
+    <script>
+        // P&L Chart
+        const ctx1 = document.getElementById('plChart').getContext('2d');
+        const plChart = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: [{% for holding in holdings %}'{{ holding[0][:10] }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+                datasets: [{
+                    label: 'Profit/Loss',
+                    data: [{% for holding in holdings %}{{ holding[5]|float }}{% if not loop.last %}, {% endif %}{% endfor %}],
+                    backgroundColor: [{% for holding in holdings %}{% if holding[5] >= 0 %}'rgba(0, 212, 170, 0.8)'{% else %}'rgba(255, 71, 87, 0.8)'{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}],
+                    borderColor: [{% for holding in holdings %}{% if holding[5] >= 0 %}'#00d4aa'{% else %}'#ff4757'{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}],
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#1a2142',
+                        titleColor: '#fff',
+                        bodyColor: '#8b92b8',
+                        borderColor: '#2a3254',
+                        borderWidth: 1,
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return '₹' + context.parsed.y.toLocaleString('en-IN', {minimumFractionDigits: 2});
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            color: '#2a3254',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#8b92b8',
+                            callback: function(value) {
+                                return '₹' + value.toLocaleString('en-IN');
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#8b92b8',
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+
+        // Holdings Distribution Chart
+        const ctx2 = document.getElementById('holdingsChart').getContext('2d');
+        const holdingsChart = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: [{% for holding in holdings %}'{{ holding[0][:15] }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+                datasets: [{
+                    data: [{% for holding in holdings %}{{ holding[4]|float }}{% if not loop.last %}, {% endif %}{% endfor %}],
+                    backgroundColor: [
+                        '#4c6fff',
+                        '#00d4aa',
+                        '#ffa502',
+                        '#ff4757',
+                        '#8b92b8',
+                        '#6c5ce7'
+                    ],
+                    borderColor: '#1a2142',
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#8b92b8',
+                            padding: 12,
+                            font: {
+                                size: 10
+                            },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1a2142',
+                        titleColor: '#fff',
+                        bodyColor: '#8b92b8',
+                        borderColor: '#2a3254',
+                        borderWidth: 1,
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return '₹' + context.parsed.toLocaleString('en-IN', {minimumFractionDigits: 2});
+                            }
+                        }
+                    }
+                },
+                cutout: '65%'
+            }
+        });
+    </script>
+    {% endif %}
 </body>
 </html>

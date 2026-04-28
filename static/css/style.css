@@ -21,11 +21,17 @@
     box-sizing: border-box;
 }
 
+html {
+    overflow-x: hidden;
+}
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg-primary);
     color: var(--text-primary);
     min-height: 100vh;
+    overflow-x: hidden;
+    width: 100%;
 }
 
 /* Auth Pages */
@@ -271,16 +277,32 @@ body {
     display: flex;
     min-height: 100vh;
     background: var(--bg-primary);
+    overflow: hidden;
+    width: 100vw;
+    max-width: 100%;
+    position: relative;
 }
 
 .sidebar {
     width: 240px;
+    min-width: 240px;
     background: var(--bg-secondary);
     border-right: 1px solid var(--border-color);
     padding: 2rem 0;
     position: fixed;
     height: 100vh;
     overflow-y: auto;
+    left: 0;
+    top: 0;
+    z-index: 100;
+}
+
+.main-content {
+    flex: 1;
+    margin-left: 240px;
+    width: calc(100vw - 240px);
+    max-width: calc(100vw - 240px);
+    overflow-x: hidden;
 }
 
 .sidebar-logo {
@@ -334,11 +356,6 @@ body {
 .sidebar-nav-link i {
     font-size: 1.1rem;
     width: 20px;
-}
-
-.main-content {
-    flex: 1;
-    margin-left: 240px;
 }
 
 .topbar {
@@ -413,6 +430,8 @@ body {
 
 .content-area {
     padding: 2rem;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 .page-header {
@@ -675,11 +694,13 @@ body {
 
 .table-wrapper {
     overflow-x: auto;
+    max-width: 100%;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 600px;
 }
 
 thead {
@@ -823,4 +844,476 @@ tbody tr:hover {
 .topbar-search input:focus {
     outline: none;
     border-color: var(--accent-blue);
+}
+
+
+/* ==================== ANIMATIONS & TRANSITIONS ==================== */
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+/* Apply animations to elements */
+.stat-card {
+    animation: fadeInUp 0.8s ease-out forwards;
+    animation-delay: calc(var(--animation-order, 0) * 0.15s);
+    will-change: transform, opacity;
+}
+
+.ipo-card {
+    animation: fadeInUp 0.8s ease-out forwards;
+    animation-delay: calc(var(--animation-order, 0) * 0.1s);
+    will-change: transform, opacity;
+}
+
+.table-card {
+    animation: fadeIn 0.8s ease-out;
+}
+
+.auth-card {
+    animation: scaleIn 0.7s ease-out;
+}
+
+.sidebar {
+    animation: slideInLeft 0.6s ease-out;
+}
+
+.topbar {
+    animation: slideInRight 0.6s ease-out;
+}
+
+.page-header {
+    animation: fadeIn 0.7s ease-out;
+}
+
+/* Hover Effects */
+.stat-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+.stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(76, 111, 255, 0.2);
+}
+
+.ipo-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+.ipo-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(76, 111, 255, 0.15);
+    border-color: var(--accent-blue);
+}
+
+.sidebar-nav-link {
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar-nav-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 3px;
+    background: var(--accent-blue);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.sidebar-nav-link:hover::before {
+    transform: scaleY(1);
+}
+
+/* Button Animations */
+.btn-primary, .btn-secondary, .btn-apply {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary::before, .btn-apply::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.8s ease, height 0.8s ease;
+}
+
+.btn-primary:hover::before, .btn-apply:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-primary:active, .btn-apply:active {
+    transform: scale(0.97);
+}
+
+/* Input Focus Animation */
+.form-input {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-input:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(76, 111, 255, 0.2);
+}
+
+/* Table Row Hover */
+tbody tr {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+tbody tr:hover {
+    transform: translateX(2px);
+    background: var(--bg-card) !important;
+}
+
+/* Loading Shimmer Effect */
+.loading-shimmer {
+    background: linear-gradient(
+        90deg,
+        var(--bg-secondary) 0%,
+        var(--bg-card) 50%,
+        var(--bg-secondary) 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+/* Pulse Animation for Status Indicators */
+@keyframes pulse-glow {
+    0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(76, 111, 255, 0.7);
+    }
+    50% {
+        opacity: 0.8;
+        box-shadow: 0 0 0 10px rgba(76, 111, 255, 0);
+    }
+}
+
+.status-dot {
+    animation: pulse-glow 2s infinite;
+}
+
+/* Badge Animations */
+.ipo-badge, .status-badge {
+    transition: all 0.3s ease;
+}
+
+.ipo-badge:hover, .status-badge:hover {
+    transform: scale(1.1);
+}
+
+/* Smooth Scroll */
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+/* Page Transition */
+.content-area > * {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Number Counter Animation */
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card-value {
+    animation: countUp 0.6s ease-out;
+}
+
+/* Icon Spin on Hover */
+.btn-icon i, .sidebar-nav-link i {
+    transition: transform 0.3s ease;
+}
+
+.btn-icon:hover i {
+    transform: rotate(15deg) scale(1.1);
+}
+
+.sidebar-nav-link:hover i {
+    transform: translateX(5px);
+}
+
+/* Card Flip Effect for IPO Cards */
+.ipo-card {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+/* Gradient Animation for Buttons */
+@keyframes gradient-shift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.btn-primary:hover {
+    background: linear-gradient(
+        45deg,
+        var(--accent-blue),
+        #6c5ce7,
+        var(--accent-blue)
+    );
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease infinite;
+}
+
+/* Topbar User Avatar Pulse */
+.topbar-user-avatar {
+    transition: all 0.3s ease;
+}
+
+.topbar-user:hover .topbar-user-avatar {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 3px rgba(76, 111, 255, 0.3);
+}
+
+/* Form Input Icon Animation */
+.form-input-icon {
+    transition: all 0.3s ease;
+}
+
+.form-input:focus ~ .form-input-icon,
+.form-input:focus + .form-input-wrapper .form-input-icon {
+    color: var(--accent-blue);
+    transform: scale(1.1);
+}
+
+/* Alert Slide In */
+.alert {
+    animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Stagger Animation for Grid Items */
+.stats-grid > *:nth-child(1) { animation-delay: 0.1s; }
+.stats-grid > *:nth-child(2) { animation-delay: 0.2s; }
+.stats-grid > *:nth-child(3) { animation-delay: 0.3s; }
+.stats-grid > *:nth-child(4) { animation-delay: 0.4s; }
+
+.ipo-grid > *:nth-child(1) { animation-delay: 0.05s; }
+.ipo-grid > *:nth-child(2) { animation-delay: 0.1s; }
+.ipo-grid > *:nth-child(3) { animation-delay: 0.15s; }
+.ipo-grid > *:nth-child(4) { animation-delay: 0.2s; }
+.ipo-grid > *:nth-child(5) { animation-delay: 0.25s; }
+.ipo-grid > *:nth-child(6) { animation-delay: 0.3s; }
+
+/* Logo Hover Effect */
+.auth-logo i, .sidebar-logo {
+    transition: all 0.3s ease;
+}
+
+.auth-logo:hover i {
+    transform: scale(1.1) rotate(5deg);
+    color: var(--accent-blue);
+}
+
+/* Search Input Expand */
+.topbar-search input {
+    transition: all 0.3s ease;
+}
+
+.topbar-search input:focus {
+    width: 120%;
+    max-width: 500px;
+}
+
+/* Skeleton Loading Animation */
+@keyframes skeleton-loading {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--bg-secondary) 0px,
+        var(--bg-card) 40px,
+        var(--bg-secondary) 80px
+    );
+    background-size: 200px 100%;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+/* Bounce Animation for Empty States */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.fa-inbox {
+    animation: bounce 2s infinite;
+}
+
+/* Glow Effect on Focus */
+.form-input:focus,
+.btn-primary:focus,
+.btn-secondary:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(76, 111, 255, 0.3);
+}
+
+/* Smooth Height Transitions */
+.table-wrapper {
+    transition: max-height 0.3s ease;
+}
+
+/* Filter Button Active Animation */
+.filter-btn.active {
+    animation: scaleIn 0.3s ease;
+}
+
+/* Chart Container Fade In */
+canvas {
+    animation: fadeIn 0.8s ease-out;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+
+/* ==================== OVERFLOW FIX ==================== */
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+}
+
+.dashboard-wrapper,
+.main-content,
+.content-area,
+.topbar,
+.page-header,
+.stats-grid,
+.ipo-grid,
+.table-card,
+.table-wrapper {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+}
+
+/* Ensure no element causes horizontal scroll */
+.stat-card,
+.ipo-card,
+.form-input,
+.btn-primary,
+.btn-secondary {
+    max-width: 100% !important;
 }
