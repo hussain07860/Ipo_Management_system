@@ -83,7 +83,7 @@ Open browser: http://127.0.0.1:5000
 **Demo User:**
 - Email: `demo@example.com`
 - Password: `Test@123456`
-- Balance: ₹50,000
+- Balance: ₹50,000 
 
 *Quick login buttons available on login pages for easy testing*
 
