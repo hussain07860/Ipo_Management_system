@@ -1,95 +1,203 @@
-{% extends "base.html" %}
-
-{% block title %}Wallet{% endblock %}
-
-{% block content %}
-<nav class="navbar navbar-custom">
-    <div class="container-fluid">
-        <span class="navbar-brand">
-            <i class="fas fa-wallet me-2"></i>
-            My Wallet
-        </span>
-        <div>
-            <a href="{{ url_for('user_home') }}" class="btn btn-outline-primary btn-sm me-2">
-                <i class="fas fa-home me-1"></i>Home
-            </a>
-            <a href="{{ url_for('logout') }}" class="btn btn-danger-custom btn-sm">
-                <i class="fas fa-sign-out-alt me-1"></i>Logout
-            </a>
-        </div>
-    </div>
-</nav>
-
-<div class="container mt-5">
-    <div class="row">
-        <!-- Balance Card -->
-        <div class="col-md-6 mb-4">
-            <div class="wallet-card">
-                <h4 class="mb-2">
-                    <i class="fas fa-wallet me-2"></i>
-                    Current Balance
-                </h4>
-                <div class="wallet-balance">₹ {{ "%.2f"|format(balance) }}</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet - IPO Genesis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-title">IPO Genesis</div>
+                <div class="sidebar-logo-subtitle">Investor Portal</div>
             </div>
-        </div>
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('user_home') }}" class="sidebar-nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('user_dashboard') }}" class="sidebar-nav-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('user_ipos') }}" class="sidebar-nav-link">
+                        <i class="fas fa-building"></i>
+                        <span>IPO Explorer</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('wallet') }}" class="sidebar-nav-link active">
+                        <i class="fas fa-wallet"></i>
+                        <span>Wallet</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('portfolio') }}" class="sidebar-nav-link">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Portfolio</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('my_applications') }}" class="sidebar-nav-link">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Applications</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('logout') }}" class="sidebar-nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
 
-        <!-- Recharge Card -->
-        <div class="col-md-6 mb-4">
-            <div class="card-custom p-4">
-                <h4 class="mb-4">
-                    <i class="fas fa-plus-circle me-2"></i>
-                    Add Money
-                </h4>
-                <form method="POST">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Enter Amount</label>
-                        <input type="number" name="amount" class="form-control form-control-custom" 
-                               placeholder="Enter amount" required min="1" max="1000000" step="0.01">
-                        <small class="text-muted">Min: ₹1 | Max: ₹10,00,000 per transaction</small>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div class="topbar-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search transactions...">
+                </div>
+                <div class="topbar-actions">
+                    <div class="topbar-user">
+                        <div class="topbar-user-avatar">{{ session.user_name[0].upper() }}</div>
+                        <div class="topbar-user-name">{{ session.user_name }}</div>
                     </div>
-                    <button type="submit" class="btn btn-custom btn-success-custom w-100">
-                        <i class="fas fa-check-circle me-2"></i>Add to Wallet
-                    </button>
-                </form>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <div class="page-header">
+                    <h1 class="page-title">Wallet Management</h1>
+                    <p class="page-subtitle">Manage your funds and view transaction history</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert {{ category }}">
+                                <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <div class="stat-card-label">Available Balance</div>
+                                <div class="stat-card-value">₹{{ "{:,.2f}".format(balance) }}</div>
+                            </div>
+                            <div class="stat-card-icon green">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <div class="stat-card-label">Recharge Limit</div>
+                                <div class="stat-card-value">₹10,00,000</div>
+                                <small style="color: var(--text-muted); font-size: 0.75rem;">Per transaction</small>
+                            </div>
+                            <div class="stat-card-icon blue">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recharge Form -->
+                <div class="table-card" style="margin-bottom: 2rem;">
+                    <div class="table-header">
+                        <h3 class="table-title">Add Funds</h3>
+                    </div>
+                    <div style="padding: 2rem;">
+                        <form method="POST">
+                            <div class="form-group">
+                                <label class="form-label">Recharge Amount</label>
+                                <div class="form-input-wrapper">
+                                    <i class="fas fa-rupee-sign form-input-icon"></i>
+                                    <input type="number" name="amount" class="form-input" 
+                                           placeholder="Enter amount (Min: ₹1, Max: ₹10,00,000)" 
+                                           required min="1" max="1000000" step="0.01">
+                                </div>
+                                <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem; display: block;">
+                                    Minimum: ₹1 | Maximum: ₹10,00,000 per transaction | Max Balance: ₹9,99,99,999.99
+                                </small>
+                            </div>
+                            <button type="submit" class="btn-primary" style="width: auto; padding: 0.875rem 2rem;">
+                                <i class="fas fa-plus-circle" style="margin-right: 0.5rem;"></i>Add to Wallet
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Transaction History -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3 class="table-title">Transaction History</h3>
+                        <div class="table-actions">
+                            <button class="btn-icon">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Date & Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for txn in transactions %}
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-{% if txn[0] == 'Recharge' %}arrow-down{% else %}arrow-up{% endif %}" 
+                                           style="color: {% if txn[0] == 'Recharge' %}var(--accent-green){% else %}var(--accent-red){% endif %}; margin-right: 0.5rem;"></i>
+                                        <span style="color: var(--text-primary); font-weight: 600;">{{ txn[0] }}</span>
+                                    </td>
+                                    <td style="font-weight: 700; color: {% if txn[0] == 'Recharge' %}var(--accent-green){% else %}var(--accent-red){% endif %};">
+                                        {% if txn[0] == 'Recharge' %}+{% else %}-{% endif %}₹{{ "{:,.2f}".format(txn[1]) }}
+                                    </td>
+                                    <td>{{ txn[2].strftime('%d %b %Y, %I:%M %p') }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                                        <i class="fas fa-inbox" style="font-size: 3rem; display: block; margin-bottom: 1rem; opacity: 0.3;"></i>
+                                        No transactions yet
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Transaction History -->
-    <div class="card-custom p-4 mt-4">
-        <h4 class="mb-4">
-            <i class="fas fa-history me-2"></i>
-            Transaction History
-        </h4>
-        <div class="table-responsive">
-            <table class="table table-custom">
-                <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>Amount</th>
-                        <th>Date & Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for txn in transactions %}
-                    <tr>
-                        <td>
-                            <i class="fas fa-{% if txn[0] == 'Recharge' %}arrow-down text-success{% else %}arrow-up text-danger{% endif %} me-2"></i>
-                            {{ txn[0] }}
-                        </td>
-                        <td class="fw-bold {% if txn[0] == 'Recharge' %}text-success{% else %}text-danger{% endif %}">
-                            {% if txn[0] == 'Recharge' %}+{% else %}-{% endif %}₹{{ "{:,.2f}".format(txn[1]) }}
-                        </td>
-                        <td>{{ txn[2].strftime('%d %b %Y, %I:%M %p') }}</td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="3" class="text-center text-muted">No transactions yet</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-{% endblock %}
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

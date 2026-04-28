@@ -1,122 +1,152 @@
-{% extends "base.html" %}
-
-{% block title %}Admin Dashboard{% endblock %}
-
-{% block content %}
-<nav class="navbar navbar-custom">
-    <div class="container-fluid">
-        <span class="navbar-brand">
-            <i class="fas fa-user-shield me-2"></i>
-            Admin Dashboard
-        </span>
-        <div>
-            <a href="{{ url_for('add_ipo') }}" class="btn btn-warning btn-sm me-2">
-                <i class="fas fa-plus-circle me-1"></i>Add IPO
-            </a>
-            <a href="{{ url_for('logout') }}" class="btn btn-danger-custom btn-sm">
-                <i class="fas fa-sign-out-alt me-1"></i>Logout
-            </a>
-        </div>
-    </div>
-</nav>
-
-<div class="container mt-5">
-    <h2 class="mb-4 text-white">
-        <i class="fas fa-chart-bar me-2"></i>
-        Overview
-    </h2>
-
-    <!-- Stats -->
-    <div class="row mb-5">
-        <div class="col-md-4 mb-4">
-            <div class="stat-card card-gradient">
-                <i class="fas fa-file-alt fa-3x mb-3"></i>
-                <div class="stat-number">{{ total_apps }}</div>
-                <div class="stat-label text-white">Total Applications</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - IPO Genesis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-title">Admin Portal</div>
+                <div class="sidebar-logo-subtitle">SYSTEM CONTROL</div>
             </div>
-        </div>
 
-        <div class="col-md-4 mb-4">
-            <div class="stat-card card-gradient-2">
-                <i class="fas fa-check-circle fa-3x mb-3"></i>
-                <div class="stat-number">{{ approved }}</div>
-                <div class="stat-label text-white">Approved</div>
-            </div>
-        </div>
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('admin_dashboard') }}" class="sidebar-nav-link active">
+                        <i class="fas fa-th-large"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('add_ipo') }}" class="sidebar-nav-link">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Add IPO</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
 
-        <div class="col-md-4 mb-4">
-            <div class="stat-card card-gradient-3">
-                <i class="fas fa-clock fa-3x mb-3"></i>
-                <div class="stat-number">{{ pending }}</div>
-                <div class="stat-label text-white">Pending</div>
+        <main class="main-content">
+            <div class="topbar">
+                <h2 style="font-size: 1.25rem; font-weight: 700;">IPO Applications</h2>
+                <div class="topbar-actions">
+                    <a href="{{ url_for('add_ipo') }}" class="btn-primary" style="width: auto; padding: 0.625rem 1.25rem;">
+                        <i class="fas fa-plus-circle me-2"></i>Add IPO
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="btn-icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
             </div>
-        </div>
+
+            <div class="content-area">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-icon blue">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-card-value">{{ total_apps }}</div>
+                        <div class="stat-card-label">Total Applications</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-card-value">{{ approved }}</div>
+                        <div class="stat-card-label">Approved</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon red">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-card-value">{{ pending }}</div>
+                        <div class="stat-card-label">Pending</div>
+                    </div>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3 class="table-title">Application Queue</h3>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>User</th>
+                                    <th>IPO</th>
+                                    <th>Applied Shares</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in applications %}
+                                <tr>
+                                    <td style="font-weight: 600;">#{{ app[0] }}</td>
+                                    <td>{{ app[1] }}</td>
+                                    <td style="font-weight: 600;">{{ app[2] }}</td>
+                                    <td>{{ "{:,}".format(app[3]) }}</td>
+                                    <td>
+                                        {% if app[4] == 'APPROVED' %}
+                                            <span class="status-badge approved">
+                                                <i class="fas fa-check-circle me-1"></i>Approved
+                                            </span>
+                                        {% else %}
+                                            <span class="status-badge pending">
+                                                <i class="fas fa-clock me-1"></i>Pending
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if app[4] == 'APPROVED' %}
+                                            <span style="color: var(--accent-green); font-weight: 600;">
+                                                <i class="fas fa-check-double me-1"></i>Completed
+                                            </span>
+                                        {% else %}
+                                            <form method="POST" action="{{ url_for('approve_application') }}" style="display: flex; gap: 0.5rem;">
+                                                <input type="hidden" name="application_id" value="{{ app[0] }}">
+                                                <input type="number" name="shares" class="form-input" placeholder="Shares" required min="1" max="{{ app[3] }}" style="width: 100px; padding: 0.5rem;">
+                                                <button class="btn-primary" style="width: auto; padding: 0.5rem 1rem;">
+                                                    <i class="fas fa-check me-1"></i>Approve
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                                        <i class="fas fa-inbox fa-3x mb-3" style="display: block;"></i>
+                                        No applications found
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <!-- Applications Table -->
-    <div class="card-custom p-4">
-        <h4 class="mb-4">
-            <i class="fas fa-list me-2"></i>
-            IPO Applications
-        </h4>
-        <div class="table-responsive">
-            <table class="table table-custom">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>User</th>
-                        <th>IPO</th>
-                        <th>Applied Shares</th>
-                        <th>Status</th>
-                        <th width="280">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for app in applications %}
-                    <tr>
-                        <td class="fw-bold">#{{ app[0] }}</td>
-                        <td>{{ app[1] }}</td>
-                        <td class="fw-semibold">{{ app[2] }}</td>
-                        <td>{{ app[3] }}</td>
-                        <td>
-                            {% if app[4] == 'APPROVED' %}
-                                <span class="badge badge-custom bg-success">
-                                    <i class="fas fa-check-circle me-1"></i>Approved
-                                </span>
-                            {% else %}
-                                <span class="badge badge-custom bg-warning text-dark">
-                                    <i class="fas fa-clock me-1"></i>Pending
-                                </span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if app[4] == 'APPROVED' %}
-                                <span class="text-success fw-bold">
-                                    <i class="fas fa-check-double me-1"></i>Completed
-                                </span>
-                            {% else %}
-                                <form method="POST" action="{{ url_for('approve_application') }}" class="d-flex gap-2">
-                                    <input type="hidden" name="application_id" value="{{ app[0] }}">
-                                    <input type="number" name="shares" class="form-control form-control-custom" 
-                                           placeholder="Shares" required min="1" max="{{ app[3] }}">
-                                    <button class="btn btn-success-custom btn-sm">
-                                        <i class="fas fa-check me-1"></i>Approve
-                                    </button>
-                                </form>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center text-muted">
-                            <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
-                            No applications found
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-{% endblock %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">
+                    <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

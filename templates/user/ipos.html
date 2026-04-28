@@ -1,74 +1,288 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPO Explorer - IPO Genesis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .filter-btn {
+            padding: 0.625rem 1.25rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .filter-btn:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+        .filter-btn.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+        .ipo-card.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-title">IPO Genesis</div>
+                <div class="sidebar-logo-subtitle">INSTITUTIONAL GRADE</div>
+            </div>
 
-{% block title %}Available IPOs{% endblock %}
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('user_home') }}" class="sidebar-nav-link">
+                        <i class="fas fa-th-large"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('user_ipos') }}" class="sidebar-nav-link active">
+                        <i class="fas fa-chart-line"></i>
+                        <span>IPO Explorer</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('portfolio') }}" class="sidebar-nav-link">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Portfolio</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('wallet') }}" class="sidebar-nav-link">
+                        <i class="fas fa-wallet"></i>
+                        <span>Wallet</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('my_applications') }}" class="sidebar-nav-link">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Applications</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
 
-{% block content %}
-<nav class="navbar navbar-custom">
-    <div class="container-fluid">
-        <span class="navbar-brand">
-            <i class="fas fa-building me-2"></i>
-            Available IPOs
-        </span>
-        <div>
-            <a href="{{ url_for('user_home') }}" class="btn btn-outline-primary btn-sm me-2">
-                <i class="fas fa-home me-1"></i>Home
-            </a>
-            <a href="{{ url_for('logout') }}" class="btn btn-danger-custom btn-sm">
-                <i class="fas fa-sign-out-alt me-1"></i>Logout
-            </a>
-        </div>
-    </div>
-</nav>
-
-<div class="container mt-5">
-    <h2 class="mb-4" style="color: var(--text-dark);">
-        <i class="fas fa-fire me-2"></i>
-        Hot IPOs
-    </h2>
-    
-    <div class="row">
-        {% for ipo in ipos %}
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="ipo-card animate-fade-in">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div class="ipo-company">{{ ipo[1] }}</div>
-                    <span class="badge badge-custom bg-success">
-                        <i class="fas fa-check-circle me-1"></i>OPEN
-                    </span>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div class="topbar-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search IPOs, companies...">
                 </div>
-                
-                <div class="ipo-price">₹ {{ "{:,.2f}".format(ipo[2]) }}</div>
-                <p class="text-muted mb-1">
-                    <i class="fas fa-chart-bar me-2"></i>
-                    <strong>Available:</strong> {{ "{:,}".format(ipo[4]) }} shares
-                </p>
-                <p class="text-muted mb-3">
-                    <i class="fas fa-calendar me-2"></i>
-                    <strong>Closes:</strong> {{ ipo[6].strftime('%d %b %Y') }}
-                </p>
 
-                <form method="POST" action="{{ url_for('apply_ipo') }}" class="mt-3">
-                    <input type="hidden" name="ipo_id" value="{{ ipo[0] }}">
-                    <div class="mb-2">
-                        <input type="number" name="shares" class="form-control form-control-custom" 
-                               placeholder="Enter shares" required min="1" max="{{ [ipo[4], 10000]|min }}">
-                        <small class="text-muted">Max: {{ "{:,}".format([ipo[4], 10000]|min) }} shares</small>
+                <div class="topbar-actions">
+                    <div class="topbar-user">
+                        <div class="topbar-user-avatar">{{ session.user_name[0] }}</div>
+                        <div class="topbar-user-name">{{ session.user_name }}</div>
                     </div>
-                    <button class="btn btn-custom btn-success-custom w-100" type="submit">
-                        <i class="fas fa-paper-plane me-1"></i>Apply Now
+                    <a href="{{ url_for('logout') }}" class="btn-icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <div class="page-header">
+                    <h1 class="page-title">IPO Explorer</h1>
+                    <p class="page-subtitle">Analyze and participate in primary market offerings.</p>
+                </div>
+
+                <!-- Filter Buttons -->
+                <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                    <button class="filter-btn active" data-filter="all">
+                        <i class="fas fa-fire" style="margin-right: 0.5rem;"></i>All IPOs
                     </button>
-                </form>
+                    <button class="filter-btn" data-filter="active">
+                        <i class="fas fa-circle" style="margin-right: 0.5rem; font-size: 0.5rem; color: var(--accent-green);"></i>Active
+                    </button>
+                    <button class="filter-btn" data-filter="upcoming">
+                        <i class="fas fa-clock" style="margin-right: 0.5rem;"></i>Upcoming
+                    </button>
+                    <button class="filter-btn" data-filter="closed">
+                        <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>Closed
+                    </button>
+                </div>
+
+                <!-- IPO Grid -->
+                <div class="ipo-grid" id="ipoGrid">
+                    {% for ipo in ipos %}
+                    <div class="ipo-card" data-status="{{ ipo[7] }}" data-company="{{ ipo[1]|lower }}">
+                        <div class="ipo-card-header">
+                            <div class="ipo-card-company">
+                                <div class="ipo-card-logo">{{ ipo[1][0] }}</div>
+                                <div>
+                                    <div class="ipo-card-name">{{ ipo[1] }}</div>
+                                    <div class="ipo-card-category">MAINBOARD</div>
+                                </div>
+                            </div>
+                            {% if ipo[7] == 'OPEN' %}
+                            <span class="ipo-badge live">
+                                <i class="fas fa-circle" style="font-size: 0.5rem;"></i> LIVE NOW
+                            </span>
+                            {% else %}
+                            <span class="ipo-badge upcoming">
+                                <i class="fas fa-clock" style="font-size: 0.5rem;"></i> CLOSED
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="ipo-card-details">
+                            <div class="ipo-detail">
+                                <div class="ipo-detail-label">Issue Price</div>
+                                <div class="ipo-detail-value">₹{{ "{:,.0f}".format(ipo[2]|float) }}</div>
+                            </div>
+                            <div class="ipo-detail">
+                                <div class="ipo-detail-label">Lot Size</div>
+                                <div class="ipo-detail-value">{{ "{:,}".format([ipo[4], 10000]|min) }}</div>
+                            </div>
+                            <div class="ipo-detail">
+                                <div class="ipo-detail-label">Open Date</div>
+                                <div class="ipo-detail-value" style="font-size: 0.875rem;">{{ ipo[5].strftime('%b %d') }}</div>
+                            </div>
+                            <div class="ipo-detail">
+                                <div class="ipo-detail-label">Close Date</div>
+                                <div class="ipo-detail-value" style="font-size: 0.875rem;">{{ ipo[6].strftime('%b %d') }}</div>
+                            </div>
+                        </div>
+
+                        {% if ipo[7] == 'OPEN' %}
+                        <form method="POST" action="{{ url_for('apply_ipo') }}" class="ipo-card-footer">
+                            <input type="hidden" name="ipo_id" value="{{ ipo[0] }}">
+                            <input type="number" name="shares" class="form-input" placeholder="Shares" required min="1" max="{{ [ipo[4], 10000]|min }}" style="flex: 1; padding: 0.75rem;">
+                            <button type="submit" class="btn-apply">
+                                Apply
+                            </button>
+                        </form>
+                        {% else %}
+                        <div class="ipo-card-footer">
+                            <button class="btn-apply" disabled style="opacity: 0.5; cursor: not-allowed; width: 100%;">
+                                Closed
+                            </button>
+                        </div>
+                        {% endif %}
+
+                        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: var(--text-muted);">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Status: {{ ipo[7] }}</span>
+                                <span>Available: {{ "{:,}".format(ipo[4]) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="stat-card" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                        <i class="fas fa-inbox" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                        <h3>No IPOs Available</h3>
+                        <p style="color: var(--text-secondary); margin-top: 0.5rem;">Check back later for new opportunities!</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div id="noResults" style="display: none; text-align: center; padding: 3rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 2rem;">
+                    <i class="fas fa-search" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                    <h3>No IPOs Found</h3>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem;">Try adjusting your filters or search query.</p>
+                </div>
             </div>
-        </div>
-        {% else %}
-        <div class="col-12">
-            <div class="card-custom p-5 text-center">
-                <i class="fas fa-inbox fa-4x mb-3 text-muted"></i>
-                <h4 class="text-muted">No IPOs available at the moment</h4>
-                <p class="text-muted">Check back later for new opportunities!</p>
-            </div>
-        </div>
-        {% endfor %}
+        </main>
     </div>
-</div>
-{% endblock %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">
+                    <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // IPO Filtering
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const ipoCards = document.querySelectorAll('.ipo-card');
+            const searchInput = document.getElementById('searchInput');
+            const noResults = document.getElementById('noResults');
+            let currentFilter = 'all';
+
+            // Filter button click
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active button
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Get filter value
+                    currentFilter = this.dataset.filter;
+                    
+                    // Apply filter
+                    applyFilters();
+                });
+            });
+
+            // Search input
+            searchInput.addEventListener('input', function() {
+                applyFilters();
+            });
+
+            function applyFilters() {
+                const searchTerm = searchInput.value.toLowerCase();
+                let visibleCount = 0;
+
+                ipoCards.forEach(card => {
+                    const status = card.dataset.status;
+                    const company = card.dataset.company;
+                    
+                    // Check filter
+                    let matchesFilter = false;
+                    if (currentFilter === 'all') {
+                        matchesFilter = true;
+                    } else if (currentFilter === 'active') {
+                        matchesFilter = status === 'OPEN';
+                    } else if (currentFilter === 'upcoming') {
+                        matchesFilter = status === 'UPCOMING';
+                    } else if (currentFilter === 'closed') {
+                        matchesFilter = status === 'CLOSED';
+                    }
+
+                    // Check search
+                    const matchesSearch = company.includes(searchTerm);
+
+                    // Show/hide card
+                    if (matchesFilter && matchesSearch) {
+                        card.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+
+                // Show/hide no results message
+                if (visibleCount === 0 && ipoCards.length > 0) {
+                    noResults.style.display = 'block';
+                } else {
+                    noResults.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

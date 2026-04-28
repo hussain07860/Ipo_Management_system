@@ -1,51 +1,85 @@
-{% extends "base.html" %}
-
-{% block title %}Admin Login{% endblock %}
-
-{% block content %}
-<div class="auth-container">
-    <div class="auth-card">
-        <h2 class="auth-title">
-            <i class="fas fa-user-shield me-2"></i>
-            Admin Portal
-        </h2>
-
-        <form method="POST">
-            <div class="mb-4">
-                <label class="form-label fw-semibold">Username</label>
-                <input type="text" name="username" class="form-control form-control-custom" placeholder="Enter admin username" required>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - IPO Genesis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-container">
+            <div class="auth-logo">
+                <i class="fas fa-shield-halved"></i>
+                <span class="auth-logo-text">Admin Portal</span>
             </div>
-            <div class="mb-4">
-                <label class="form-label fw-semibold">Password</label>
-                <div class="password-container">
-                    <input type="password" name="password" class="form-control form-control-custom" placeholder="Enter admin password" required>
-                    <button type="button" class="password-toggle">
-                        <i class="fas fa-eye"></i>
-                    </button>
+
+            <div class="auth-card">
+                <h1 class="auth-title">Administrative Access</h1>
+                <p class="auth-subtitle">Secure authentication for system administrators.</p>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert {{ category }}">
+                                <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST">
+                    <div class="form-group">
+                        <label class="form-label">Admin Username</label>
+                        <div class="form-input-wrapper">
+                            <i class="fas fa-user-shield form-input-icon"></i>
+                            <input type="text" name="username" class="form-input" placeholder="admin" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Admin Passphrase</label>
+                        <div class="form-input-wrapper">
+                            <i class="fas fa-key form-input-icon"></i>
+                            <input type="password" name="password" class="form-input" placeholder="••••••••" required>
+                            <button type="button" class="password-toggle">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Authorize Access</button>
+                </form>
+
+                <div class="auth-divider">
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Quick Test Login</span>
+                </div>
+
+                <button type="button" class="btn-secondary" style="font-size: 0.875rem;" data-username="admin" data-password="Admin@123456">
+                    <i class="fas fa-user-shield me-2"></i>Admin Account
+                </button>
+
+                <div class="auth-footer">
+                    <div class="auth-footer-links">
+                        <span class="status-indicator">
+                            <span class="status-dot"></span>
+                            SYSTEMS OPERATIONAL
+                        </span>
+                    </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-custom btn-primary-custom w-100 mb-3">
-                <i class="fas fa-sign-in-alt me-2"></i>Admin Login
-            </button>
-        </form>
 
-        <div class="text-center mt-3">
-            <p class="text-muted">
-                <a href="{{ url_for('login') }}" class="text-decoration-none" style="color: var(--primary);">
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="{{ url_for('login') }}" class="form-link" style="font-size: 0.875rem;">
                     <i class="fas fa-arrow-left me-1"></i>Back to User Login
                 </a>
-            </p>
-        </div>
-
-        <!-- Test Login Section -->
-        <div class="test-login-section">
-            <p class="text-center text-muted mb-2" style="font-size: 0.85rem;">
-                <i class="fas fa-flask me-1"></i>Quick Test Login
-            </p>
-            <button type="button" class="test-login-btn" data-username="admin" data-password="Admin@123456">
-                <i class="fas fa-user-shield me-2"></i>Admin Account
-            </button>
+            </div>
         </div>
     </div>
-</div>
-{% endblock %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -146,7 +146,7 @@ def user_dashboard():
 @login_required
 def user_ipos():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM ipo WHERE status = 'OPEN'")
+    cur.execute("SELECT * FROM ipo ORDER BY FIELD(status, 'OPEN', 'UPCOMING', 'CLOSED'), open_date DESC")
     ipos = cur.fetchall()
     cur.close()
     

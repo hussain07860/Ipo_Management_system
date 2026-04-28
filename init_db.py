@@ -79,7 +79,7 @@ try:
             available_shares INT NOT NULL,
             open_date DATE NOT NULL,
             close_date DATE NOT NULL,
-            status ENUM('OPEN', 'CLOSED') DEFAULT 'OPEN',
+            status ENUM('OPEN', 'CLOSED', 'UPCOMING') DEFAULT 'OPEN',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -160,11 +160,15 @@ try:
     # Sample IPOs
     cursor.execute("""
         INSERT INTO ipo (company_name, price_per_share, total_shares, available_shares, open_date, close_date, status) VALUES
-        ('Reliance Industries', 2500.00, 10000, 10000, '2026-05-01', '2026-05-10', 'OPEN'),
-        ('Tata Motors', 450.00, 20000, 20000, '2026-05-05', '2026-05-15', 'OPEN'),
-        ('Infosys', 1800.00, 15000, 15000, '2026-05-03', '2026-05-12', 'OPEN'),
-        ('HDFC Bank', 1650.00, 12000, 12000, '2026-05-07', '2026-05-17', 'OPEN'),
-        ('Wipro', 420.00, 18000, 18000, '2026-05-02', '2026-05-11', 'OPEN')
+        ('Reliance Industries', 2500.00, 10000, 10000, '2026-04-25', '2026-05-10', 'OPEN'),
+        ('Tata Motors', 450.00, 20000, 20000, '2026-04-28', '2026-05-15', 'OPEN'),
+        ('Infosys', 1800.00, 15000, 15000, '2026-04-26', '2026-05-12', 'OPEN'),
+        ('HDFC Bank', 1650.00, 12000, 12000, '2026-05-01', '2026-05-17', 'OPEN'),
+        ('Wipro', 420.00, 18000, 18000, '2026-04-29', '2026-05-11', 'OPEN'),
+        ('Adani Enterprises', 3200.00, 8000, 8000, '2026-05-15', '2026-05-25', 'UPCOMING'),
+        ('Bajaj Finance', 7500.00, 5000, 5000, '2026-05-20', '2026-05-30', 'UPCOMING'),
+        ('Asian Paints', 2800.00, 9000, 9000, '2026-04-01', '2026-04-15', 'CLOSED'),
+        ('Maruti Suzuki', 9500.00, 6000, 6000, '2026-04-10', '2026-04-20', 'CLOSED')
     """)
     
     conn.commit()

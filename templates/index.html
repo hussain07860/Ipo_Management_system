@@ -1,50 +1,135 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPO Genesis - Institutional Investment Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-container" style="max-width: 700px;">
+            <!-- Logo -->
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <div style="display: inline-flex; align-items: center; justify-content: center; width: 80px; height: 80px; background: var(--accent-blue); border-radius: 20px; margin-bottom: 1.5rem;">
+                    <i class="fas fa-landmark" style="font-size: 2.5rem; color: white;"></i>
+                </div>
+                <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 0.75rem; letter-spacing: -1px;">IPO Genesis</h1>
+                <p style="font-size: 1.125rem; color: var(--text-secondary); font-weight: 500;">Institutional Grade Investment Platform</p>
+            </div>
 
-{% block title %}Home - IPO Management System{% endblock %}
-
-{% block content %}
-<div class="hero-section">
-    <div class="container">
-        <h1 class="hero-title">
-            <i class="fas fa-chart-line me-3"></i>
-            IPO Management System
-        </h1>
-        <p class="hero-subtitle">
-            Invest in IPOs easily and manage your portfolio with confidence
-        </p>
-
-        <div class="mt-5">
-            <a href="{{ url_for('login') }}" class="btn btn-custom btn-success-custom btn-lg m-2">
-                <i class="fas fa-sign-in-alt me-2"></i>Login
-            </a>
-            <a href="{{ url_for('register') }}" class="btn btn-custom btn-primary-custom btn-lg m-2">
-                <i class="fas fa-user-plus me-2"></i>Register
-            </a>
-        </div>
-
-        <div class="row mt-5 pt-5">
-            <div class="col-md-4 mb-4">
+            <!-- Stats Cards -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 3rem;">
                 <div class="stat-card">
-                    <i class="fas fa-building fa-3x mb-3" style="color: var(--primary);"></i>
-                    <div class="stat-number">50+</div>
-                    <div class="stat-label">IPO Companies</div>
+                    <div style="text-align: center;">
+                        <div class="stat-card-icon blue" style="margin: 0 auto 1rem;">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="stat-card-value" style="font-size: 1.75rem;">50+</div>
+                        <div class="stat-card-label">IPO Companies</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div style="text-align: center;">
+                        <div class="stat-card-icon green" style="margin: 0 auto 1rem;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-card-value" style="font-size: 1.75rem;">10K+</div>
+                        <div class="stat-card-label">Active Investors</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div style="text-align: center;">
+                        <div class="stat-card-icon red" style="margin: 0 auto 1rem;">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-card-value" style="font-size: 1.75rem;">₹100Cr+</div>
+                        <div class="stat-card-label">Total Investment</div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="stat-card">
-                    <i class="fas fa-users fa-3x mb-3" style="color: var(--success);"></i>
-                    <div class="stat-number">10K+</div>
-                    <div class="stat-label">Active Investors</div>
+
+            <!-- CTA Buttons -->
+            <div style="display: flex; gap: 1rem; margin-bottom: 3rem;">
+                <a href="{{ url_for('login') }}" class="btn-primary" style="flex: 1; text-align: center; font-size: 1rem; padding: 1.125rem;">
+                    <i class="fas fa-sign-in-alt" style="margin-right: 0.5rem;"></i>Login
+                </a>
+                <a href="{{ url_for('register') }}" class="btn-secondary" style="flex: 1; text-align: center; font-size: 1rem; padding: 1.125rem;">
+                    <i class="fas fa-user-plus" style="margin-right: 0.5rem;"></i>Register
+                </a>
+            </div>
+
+            <!-- Features -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
+                <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center;">Why Choose IPO Genesis?</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="width: 40px; height: 40px; background: rgba(76, 111, 255, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-shield-alt" style="color: var(--accent-blue);"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 0.25rem;">Secure Platform</div>
+                            <div style="font-size: 0.875rem; color: var(--text-muted);">Bank-grade security</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="width: 40px; height: 40px; background: rgba(0, 212, 170, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-bolt" style="color: var(--accent-green);"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 0.25rem;">Instant Processing</div>
+                            <div style="font-size: 0.875rem; color: var(--text-muted);">Real-time transactions</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="width: 40px; height: 40px; background: rgba(76, 111, 255, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-chart-pie" style="color: var(--accent-blue);"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 0.25rem;">Portfolio Tracking</div>
+                            <div style="font-size: 0.875rem; color: var(--text-muted);">Live P&L updates</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="width: 40px; height: 40px; background: rgba(0, 212, 170, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-headset" style="color: var(--accent-green);"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 0.25rem;">24/7 Support</div>
+                            <div style="font-size: 0.875rem; color: var(--text-muted);">Always available</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="stat-card">
-                    <i class="fas fa-rupee-sign fa-3x mb-3" style="color: var(--warning);"></i>
-                    <div class="stat-number">₹100Cr+</div>
-                    <div class="stat-label">Total Investment</div>
+
+            <!-- Compliance -->
+            <div style="text-align: center; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem;">Trusted & Compliant</div>
+                <div style="display: flex; justify-content: center; gap: 2rem; font-size: 0.875rem; color: var(--text-secondary);">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>ISO 27001</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-lock"></i>
+                        <span>SOC 2 TYPE II</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-certificate"></i>
+                        <span>SEBI REGISTERED</span>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Admin Link -->
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="{{ url_for('admin_login') }}" class="form-link" style="font-size: 0.875rem;">
+                    <i class="fas fa-user-shield" style="margin-right: 0.25rem;"></i>Admin Portal
+                </a>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+</body>
+</html>
