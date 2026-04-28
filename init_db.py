@@ -17,7 +17,7 @@ MYSQL_USER = os.getenv('MYSQL_USER', 'root')
 MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
 MYSQL_DB = os.getenv('MYSQL_DB', 'ipo_management_system')
 
-print("🔧 Initializing Database...")
+print("[SETUP] Initializing Database...")
 print(f"Host: {MYSQL_HOST}")
 print(f"User: {MYSQL_USER}")
 print(f"Database: {MYSQL_DB}")
@@ -32,12 +32,12 @@ try:
     cursor = conn.cursor()
     
     # Create database
-    print(f"\n📦 Creating database '{MYSQL_DB}'...")
+    print(f"\n[DB] Creating database '{MYSQL_DB}'...")
     cursor.execute(f"CREATE DATABASE IF NOT EXISTS {MYSQL_DB}")
     cursor.execute(f"USE {MYSQL_DB}")
     
     # Drop existing tables
-    print("🗑️  Dropping existing tables...")
+    print("[DROP] Dropping existing tables...")
     cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
     tables = ['wallet_transactions', 'portfolio', 'allotment', 'ipo_application', 'ipo', 'users', 'admin']
     for table in tables:
@@ -45,7 +45,7 @@ try:
     cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
     
     # Create tables
-    print("📋 Creating tables...")
+    print("[TABLES] Creating tables...")
     
     # Users table
     cursor.execute("""
@@ -136,14 +136,14 @@ try:
     """)
     
     # Add indexes
-    print("🔍 Creating indexes...")
+    print("[INDEX] Creating indexes...")
     cursor.execute("CREATE INDEX idx_user_transactions ON wallet_transactions(user_id, transaction_date DESC)")
     cursor.execute("CREATE INDEX idx_portfolio_user ON portfolio(user_id)")
     cursor.execute("CREATE INDEX idx_applications_user ON ipo_application(user_id)")
     cursor.execute("CREATE INDEX idx_applications_status ON ipo_application(status)")
     
     # Insert sample data
-    print("📝 Inserting sample data...")
+    print("[DATA] Inserting sample data...")
     
     # Admin (password: Admin@123456)
     admin_pass = bcrypt.generate_password_hash('Admin@123456').decode('utf-8')
@@ -169,8 +169,8 @@ try:
     
     conn.commit()
     
-    print("\n✅ Database initialized successfully!")
-    print("\n🔑 Test Credentials:")
+    print("\n[SUCCESS] Database initialized successfully!")
+    print("\n[AUTH] Test Credentials:")
     print("=" * 50)
     print("ADMIN LOGIN:")
     print("  Username: admin")
@@ -178,21 +178,21 @@ try:
     print("\nUSER LOGIN:")
     print("  Email: test@example.com")
     print("  Password: Test@123456")
-    print("  Balance: ₹100,000")
+    print("  Balance: Rs. 100,000")
     print("\nALTERNATE USER:")
     print("  Email: demo@example.com")
     print("  Password: Test@123456")
-    print("  Balance: ₹50,000")
+    print("  Balance: Rs. 50,000")
     print("=" * 50)
     
     cursor.close()
     conn.close()
     
 except MySQLdb.Error as e:
-    print(f"\n❌ Error: {e}")
+    print(f"\n[ERROR] Error: {e}")
     print("\nMake sure:")
     print("1. MySQL is running")
     print("2. Password in .env is correct")
     print("3. User has proper permissions")
 except Exception as e:
-    print(f"\n❌ Unexpected error: {e}")
+    print(f"\n[ERROR] Unexpected error: {e}")
