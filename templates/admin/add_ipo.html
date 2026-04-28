@@ -1,82 +1,153 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add IPO - IPO Genesis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-title">IPO Genesis</div>
+                <div class="sidebar-logo-subtitle">Admin Portal</div>
+            </div>
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('admin_dashboard') }}" class="sidebar-nav-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('add_ipo') }}" class="sidebar-nav-link active">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Add IPO</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('logout') }}" class="sidebar-nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
 
-{% block title %}Add IPO{% endblock %}
-
-{% block content %}
-<nav class="navbar navbar-custom">
-    <div class="container-fluid">
-        <span class="navbar-brand">
-            <i class="fas fa-plus-circle me-2"></i>
-            Add New IPO
-        </span>
-        <div>
-            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-primary btn-sm me-2">
-                <i class="fas fa-arrow-left me-1"></i>Back
-            </a>
-            <a href="{{ url_for('logout') }}" class="btn btn-danger-custom btn-sm">
-                <i class="fas fa-sign-out-alt me-1"></i>Logout
-            </a>
-        </div>
-    </div>
-</nav>
-
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card-custom p-5">
-                <h3 class="mb-4">
-                    <i class="fas fa-building me-2"></i>
-                    IPO Details
-                </h3>
-
-                <form method="POST">
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label fw-semibold">Company Name</label>
-                            <input type="text" name="company_name" class="form-control form-control-custom" 
-                                   placeholder="Enter company name" required>
-                        </div>
-
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label fw-semibold">Price Per Share (₹)</label>
-                            <input type="number" step="0.01" name="price_per_share" class="form-control form-control-custom" 
-                                   placeholder="Enter price" required min="0.01">
-                        </div>
-
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label fw-semibold">Total Shares</label>
-                            <input type="number" name="total_shares" class="form-control form-control-custom" 
-                                   placeholder="Enter total shares" required min="1">
-                        </div>
-
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label fw-semibold">Available Shares</label>
-                            <input type="number" name="available_shares" class="form-control form-control-custom" 
-                                   placeholder="Enter available shares" required min="1">
-                        </div>
-
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label fw-semibold">Open Date</label>
-                            <input type="date" name="open_date" class="form-control form-control-custom" required>
-                        </div>
-
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label fw-semibold">Close Date</label>
-                            <input type="date" name="close_date" class="form-control form-control-custom" required>
-                        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div class="topbar-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="topbar-actions">
+                    <div class="topbar-user">
+                        <div class="topbar-user-avatar">A</div>
+                        <div class="topbar-user-name">{{ session.admin_name }}</div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="d-grid gap-2 mt-3">
-                        <button type="submit" class="btn btn-custom btn-primary-custom">
-                            <i class="fas fa-plus-circle me-2"></i>Add IPO
-                        </button>
-                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-times me-2"></i>Cancel
-                        </a>
+            <!-- Content Area -->
+            <div class="content-area">
+                <div class="page-header">
+                    <h1 class="page-title">Create New IPO</h1>
+                    <p class="page-subtitle">Add a new IPO offering to the platform</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert {{ category }}">
+                                <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- IPO Form -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3 class="table-title">IPO Details</h3>
                     </div>
-                </form>
+                    <div style="padding: 2rem;">
+                        <form method="POST">
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                                <div class="form-group">
+                                    <label class="form-label">Company Name</label>
+                                    <div class="form-input-wrapper">
+                                        <i class="fas fa-building form-input-icon"></i>
+                                        <input type="text" name="company_name" class="form-input" 
+                                               placeholder="Enter company name" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Price Per Share (₹)</label>
+                                    <div class="form-input-wrapper">
+                                        <i class="fas fa-rupee-sign form-input-icon"></i>
+                                        <input type="number" step="0.01" name="price_per_share" class="form-input" 
+                                               placeholder="Enter price" required min="0.01">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Total Shares</label>
+                                    <div class="form-input-wrapper">
+                                        <i class="fas fa-chart-bar form-input-icon"></i>
+                                        <input type="number" name="total_shares" class="form-input" 
+                                               placeholder="Enter total shares" required min="1">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Available Shares</label>
+                                    <div class="form-input-wrapper">
+                                        <i class="fas fa-chart-line form-input-icon"></i>
+                                        <input type="number" name="available_shares" class="form-input" 
+                                               placeholder="Enter available shares" required min="1">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Open Date</label>
+                                    <div class="form-input-wrapper">
+                                        <i class="fas fa-calendar form-input-icon"></i>
+                                        <input type="date" name="open_date" class="form-input" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Close Date</label>
+                                    <div class="form-input-wrapper">
+                                        <i class="fas fa-calendar-check form-input-icon"></i>
+                                        <input type="date" name="close_date" class="form-input" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                                <button type="submit" class="btn-primary" style="width: auto; padding: 0.875rem 2rem;">
+                                    <i class="fas fa-plus-circle" style="margin-right: 0.5rem;"></i>Create IPO
+                                </button>
+                                <a href="{{ url_for('admin_dashboard') }}" class="btn-secondary" style="width: auto; padding: 0.875rem 2rem;">
+                                    <i class="fas fa-times" style="margin-right: 0.5rem;"></i>Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

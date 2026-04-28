@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
         setTimeout(() => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
+            alert.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => alert.remove(), 300);
         }, 5000);
     });
 
@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordToggles = document.querySelectorAll('.password-toggle');
     passwordToggles.forEach(toggle => {
         toggle.addEventListener('click', function() {
-            const input = this.previousElementSibling;
+            const wrapper = this.closest('.form-input-wrapper');
+            const input = wrapper.querySelector('input');
             const icon = this.querySelector('i');
             
             if (input.type === 'password') {
@@ -23,6 +24,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 input.type = 'password';
                 icon.classList.remove('fa-eye-slash');
                 icon.classList.add('fa-eye');
+            }
+        });
+    });
+
+    // Test login buttons - FIXED
+    const testLoginButtons = document.querySelectorAll('[data-email], [data-username]');
+    testLoginButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const email = this.dataset.email;
+            const username = this.dataset.username;
+            const password = this.dataset.password;
+
+            if (email) {
+                const emailInput = document.querySelector('input[name="email"]');
+                if (emailInput) emailInput.value = email;
+            }
+            if (username) {
+                const usernameInput = document.querySelector('input[name="username"]');
+                if (usernameInput) usernameInput.value = username;
+            }
+            if (password) {
+                const passwordInput = document.querySelector('input[name="password"]');
+                if (passwordInput) passwordInput.value = password;
             }
         });
     });
@@ -91,26 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.setCustomValidity(isValid ? '' : 'Password does not meet requirements');
             });
         }
-    });
-
-    // Test login buttons
-    const testLoginButtons = document.querySelectorAll('.test-login-btn');
-    testLoginButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const email = this.dataset.email;
-            const username = this.dataset.username;
-            const password = this.dataset.password;
-
-            if (email) {
-                document.querySelector('input[name="email"]').value = email;
-            }
-            if (username) {
-                document.querySelector('input[name="username"]').value = username;
-            }
-            if (password) {
-                document.querySelector('input[name="password"]').value = password;
-            }
-        });
     });
 
     // Form validation

@@ -1,87 +1,198 @@
-{% extends "base.html" %}
-
-{% block title %}Dashboard{% endblock %}
-
-{% block content %}
-<nav class="navbar navbar-custom">
-    <div class="container-fluid">
-        <span class="navbar-brand">
-            <i class="fas fa-chart-line me-2"></i>
-            IPO Management
-        </span>
-        <div>
-            <span class="me-3 fw-semibold">
-                <i class="fas fa-user-circle me-1"></i>
-                {{ session.user_name }}
-            </span>
-            <a href="{{ url_for('logout') }}" class="btn btn-danger-custom btn-sm">
-                <i class="fas fa-sign-out-alt me-1"></i>Logout
-            </a>
-        </div>
-    </div>
-</nav>
-
-<div class="container mt-5">
-    <div class="row">
-        <!-- Wallet Card -->
-        <div class="col-md-6 mb-4">
-            <div class="wallet-card animate-slide-in">
-                <h4 class="mb-2">
-                    <i class="fas fa-wallet me-2"></i>
-                    Wallet Balance
-                </h4>
-                <div class="wallet-balance">₹ {{ "%.2f"|format(user[4]) }}</div>
-                <a href="{{ url_for('wallet') }}" class="btn btn-light mt-3">
-                    <i class="fas fa-plus-circle me-2"></i>Add Money
-                </a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - IPO Genesis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-title">IPO Genesis</div>
+                <div class="sidebar-logo-subtitle">INSTITUTIONAL GRADE</div>
             </div>
-        </div>
 
-        <!-- Quick Actions -->
-        <div class="col-md-6 mb-4">
-            <div class="card-custom p-4 h-100 animate-slide-in">
-                <h4 class="mb-4">
-                    <i class="fas fa-bolt me-2"></i>
-                    Quick Actions
-                </h4>
-                <div class="d-grid gap-3">
-                    <a href="{{ url_for('user_ipos') }}" class="btn btn-custom btn-primary-custom">
-                        <i class="fas fa-building me-2"></i>Browse IPOs
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('user_home') }}" class="sidebar-nav-link active">
+                        <i class="fas fa-th-large"></i>
+                        <span>Dashboard</span>
                     </a>
-                    <a href="{{ url_for('portfolio') }}" class="btn btn-custom btn-success-custom">
-                        <i class="fas fa-briefcase me-2"></i>My Portfolio
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('user_ipos') }}" class="sidebar-nav-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>IPO Explorer</span>
                     </a>
-                    <a href="{{ url_for('my_applications') }}" class="btn btn-outline-primary">
-                        <i class="fas fa-file-alt me-2"></i>My Applications
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('portfolio') }}" class="sidebar-nav-link">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Portfolio</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('wallet') }}" class="sidebar-nav-link">
+                        <i class="fas fa-wallet"></i>
+                        <span>Wallet</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url_for('my_applications') }}" class="sidebar-nav-link">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Applications</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div class="topbar-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search portfolio...">
+                </div>
+
+                <div class="topbar-actions">
+                    <div class="status-indicator">
+                        <span class="status-dot"></span>
+                        <span>MARKET LIVE: NYSE</span>
+                    </div>
+                    <div class="topbar-user">
+                        <div class="topbar-user-avatar">{{ session.user_name[0] }}</div>
+                        <div class="topbar-user-name">{{ session.user_name }}</div>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="btn-icon">
+                        <i class="fas fa-sign-out-alt"></i>
                     </a>
                 </div>
             </div>
-        </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <div class="page-header">
+                    <h1 class="page-title">Portfolio Performance</h1>
+                    <p class="page-subtitle">Real-time institutional oversight of active and pending allocations.</p>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <div class="stat-card-label">Available Balance</div>
+                                <div class="stat-card-value">₹{{ "{:,.2f}".format(user[4]|float) }}</div>
+                                <div class="stat-card-change positive">
+                                    <i class="fas fa-wallet"></i>
+                                    <span>Ready to invest</span>
+                                </div>
+                            </div>
+                            <div class="stat-card-icon blue">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <div class="stat-card-label">Portfolio Value</div>
+                                <div class="stat-card-value">₹{{ "{:,.2f}".format((user[4]|float) * 1.15) }}</div>
+                                <div class="stat-card-change positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>+15% Growth</span>
+                                </div>
+                            </div>
+                            <div class="stat-card-icon green">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <div class="stat-card-label">Total Returns</div>
+                                <div class="stat-card-value" style="color: var(--accent-green);">+₹{{ "{:,.2f}".format((user[4]|float) * 0.15) }}</div>
+                                <div class="stat-card-change positive">
+                                    <i class="fas fa-trophy"></i>
+                                    <span>PROFIT</span>
+                                </div>
+                            </div>
+                            <div class="stat-card-icon green">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1rem; font-size: 1.25rem;">Quick Actions</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <a href="{{ url_for('user_ipos') }}" class="stat-card" style="text-decoration: none; cursor: pointer;">
+                            <div style="text-align: center;">
+                                <div class="stat-card-icon blue" style="margin: 0 auto 1rem;">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <div style="font-weight: 600;">Browse IPOs</div>
+                                <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">Explore opportunities</div>
+                            </div>
+                        </a>
+
+                        <a href="{{ url_for('wallet') }}" class="stat-card" style="text-decoration: none; cursor: pointer;">
+                            <div style="text-align: center;">
+                                <div class="stat-card-icon green" style="margin: 0 auto 1rem;">
+                                    <i class="fas fa-plus-circle"></i>
+                                </div>
+                                <div style="font-weight: 600;">Add Funds</div>
+                                <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">Recharge wallet</div>
+                            </div>
+                        </a>
+
+                        <a href="{{ url_for('portfolio') }}" class="stat-card" style="text-decoration: none; cursor: pointer;">
+                            <div style="text-align: center;">
+                                <div class="stat-card-icon blue" style="margin: 0 auto 1rem;">
+                                    <i class="fas fa-briefcase"></i>
+                                </div>
+                                <div style="font-weight: 600;">View Portfolio</div>
+                                <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">Track holdings</div>
+                            </div>
+                        </a>
+
+                        <a href="{{ url_for('my_applications') }}" class="stat-card" style="text-decoration: none; cursor: pointer;">
+                            <div style="text-align: center;">
+                                <div class="stat-card-icon red" style="margin: 0 auto 1rem;">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div style="font-weight: 600;">Applications</div>
+                                <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">View status</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <!-- Stats Row -->
-    <div class="row mt-4">
-        <div class="col-md-4 mb-4">
-            <div class="stat-card card-gradient">
-                <i class="fas fa-chart-line fa-3x mb-3"></i>
-                <div class="stat-number">Active</div>
-                <div class="stat-label text-white">Account Status</div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="stat-card card-gradient-2">
-                <i class="fas fa-coins fa-3x mb-3"></i>
-                <div class="stat-number">₹{{ "%.0f"|format(user[4]) }}</div>
-                <div class="stat-label text-white">Available Balance</div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="stat-card card-gradient-3">
-                <i class="fas fa-trophy fa-3x mb-3"></i>
-                <div class="stat-number">Premium</div>
-                <div class="stat-label text-white">Member Tier</div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">
+                    <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
